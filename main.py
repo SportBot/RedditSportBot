@@ -1,16 +1,86 @@
-# editing this file to see what it does
-
 import praw
 from bs4 import BeautifulSoup
 import urllib.request
 import requests
+import json
+import datetime
 
-username = input('Reddit username: ')
-password = input('Reddit password: ')
+#username = input('Reddit username: ')
+#password = input('Reddit password: ')
+
+sport = input("sport: ")
+
+# url's obviously
+if sport == "nfl":
+    url = "http://www.nfl.com/ajax/schedules/matchup?gameId=YYYYMMDDGAMEID&gameState=PRE"
+
+if sport == "nba":
+    url = "http://data.nba.com/jsonp/1m/json/cms/2015/tntot/games.json?callback=schedule"
+
+# if nfl, format url with date
+if "nfl.com" in url:
+
+    # format current date for url
+    gamedate = datetime.datetime.now().strftime("%Y%m%d")
+    print ("today is " + today)
+
+    # put the current date into the url, change gameID if needed
+    url = url.replace("YYYYMMDD", gamedate)
+    url = url.replace("GAMEID", "00")
+
+    # print url
+    print (url)
+
+    # load the url
+    r = requests.get(url)
+
+    # get json
+    data = r.json()
+
+    # prints who plays today
+    print (data["homeTeam"]["city"] + " plays today")
+
+    # pretty print json
+    #print(json.dumps(data, sort_keys=True, indent=4))
+
+
+
+# check if nba url, delete some pesky text
+if "nba.com" in url:
+
+    # format current date for searching
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    today ="2016-03-10"
+    print ("today is " + today)
+
+    # print url
+    print (url)
+
+    # load the url
+    r = requests.get(url)
+
+    # gets rid of pesky text in json
+    r = r.text.replace("schedule(", "")
+    r = r.replace(");", "")
+
+    # convert string back to json
+    data = json.loads(r)
+
+    # find nba stuff
+    for game in data["sports_content"]["games"]:
+        if today == game["gameDate"]:
+            print (game["visitor"] + " plays " + game["home"])
+
+    # pretty print json
+    #print(json.dumps(data, sort_keys=True, indent=4))
+
+
+#r = urllib.request.urlopen(url).read()
+#soup = BeautifulSoup(r, "html.parser")
+
+
 
 """
-r = urllib.request.urlopen('http://espn.go.com/nfl/schedule/_/seasontype/2/week/1').read()
-soup = BeautifulSoup(r, "html.parser")
 teamnames = soup.find_all("a", class_="team-name")
 
 counter = 0
@@ -48,8 +118,6 @@ for table in tables:
 
 for row in matrix:
     print (row)
-"""
-
 
 # unique user agent
 user_agent = ("coltondot 0.1")
@@ -108,3 +176,4 @@ title = input("title: ")
 body = input("body: ")
 
 r.submit(sub, title, body)
+"""
