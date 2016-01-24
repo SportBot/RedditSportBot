@@ -22,8 +22,41 @@ if "nfl.com" in url:
 
     # format current date for url
     gamedate = datetime.datetime.now().strftime("%Y%m%d")
-    print ("today is " + today)
+    gamedate = "20151224"
+    #print ("today is " + gamedate)
 
+    year = input("year: ")
+
+    # loop through months
+    for month in range(1,13):
+
+        # loop through days
+        for day in range(1,32):
+
+            # start looping game id
+            for games in range(0,16):
+
+                # put the date into the url, change gameID if needed
+                url = "http://www.nfl.com/ajax/schedules/matchup?gameId="+str(year)+"{0:0=2d}".format(month)+"{0:0=2d}".format(day)+"{0:0=2d}".format(games)+"&gameState=POST"
+
+                print ("{0:0=2d}".format(month)+" "+"{0:0=2d}".format(day))
+
+                # load the url
+                r = requests.get(url)
+
+                # get json
+                data = r.json()
+
+                if data["message"] == "ERROR":
+                    break
+
+                if data["message"] == "SUCCESS":
+                    # prints who plays today
+                    print ("{0:0=2d}".format(month)+" "+"{0:0=2d}".format(day) + ":\t" + data["homeTeam"]["city"] + " played " + data["visitorTeam"]["city"])
+                    #print ("\t\t" + url)
+
+
+"""
     # put the current date into the url, change gameID if needed
     url = url.replace("YYYYMMDD", gamedate)
     url = url.replace("GAMEID", "00")
@@ -41,8 +74,8 @@ if "nfl.com" in url:
     print (data["homeTeam"]["city"] + " plays today")
 
     # pretty print json
-    #print(json.dumps(data, sort_keys=True, indent=4))
-
+    print(json.dumps(data, sort_keys=True, indent=4))
+"""
 
 
 # check if nba url, delete some pesky text
